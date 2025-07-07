@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simey-Style Holo Card Viewer (Blending Fixed)</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card__translater {
+      perspective: 1000px;
+    }
+
+    .card__rotator {
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+    }
+
+    .card__front {
+      position: relative;
+      width: 300px;
+      height: 420px;
+      transform-style: preserve-3d;
+    }
+
+    .card__img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .card__foil {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 1;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      -webkit-mask-image: var(--mask-url);
+      -webkit-mask-size: cover;
+      -webkit-mask-repeat: no-repeat;
+      mask-image: var(--mask-url);
+      mask-size: cover;
+      mask-repeat: no-repeat;
+    }
+
+    .card__shine {
+      z-index: 3;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.2), transparent 60%);
+      mix-blend-mode: soft-light;
+    }
+
+    .card__glare {
+      z-index: 4;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255,255,255,0.15), transparent);
+      mix-blend-mode: overlay;
+    }
+  </style>
+</head>
+<body>
+  <div class="card__translater">
+    <button class="card__rotator" id="cardRotator" aria-label="Expand the Pokemon Card" tabindex="0">
+      <div class="card__front" id="cardFront">
+        <img class="card__img" id="cardImage" src="" alt="Card front" />
+        <div class="card__foil" id="cardFoil"></div>
+        <div class="card__shine"></div>
+        <div class="card__glare"></div>
+      </div>
+    </button>
+  </div>
+
+  <script>
+    function getParam(key) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(key);
+    }
+
+    const cardURL = getParam('card');
+    const foilURL = getParam('foil');
+    const maskURL = getParam('mask');
+
+    if (cardURL) document.getElementById('cardImage').src = cardURL;
+    if (foilURL) document.getElementById('cardFoil').style.backgroundImage = `url(${foilURL})`;
+    if (maskURL) {
+      document.documentElement.style.setProperty('--mask-url', `url(${maskURL})`);
+    }
+
+    const rotator = document.getElementById('cardRotator');
+    const front = document.getElementById('cardFront');
+
+    rotator.addEventListener('mousemove', (e) => {
+      const bounds = rotator.getBoundingClientRect();
+      const x = (e.clientX - bounds.left) / bounds.width;
+      const y = (e.clientY - bounds.top) / bounds.height;
+      const rotateX = (y - 0.5) * -20;
+      const rotateY = (x - 0.5) * 20;
+      rotator.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      front.style.setProperty('--x', `${x * 100}%`);
+      front.style.setProperty('--y', `${y * 100}%`);
+    });
+
+    rotator.addEventListener('mouseleave', () => {
+      rotator.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    });
+  </script>
+</body>
+</html>
