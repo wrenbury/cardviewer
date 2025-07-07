@@ -23,7 +23,6 @@
       height: 420px;
       perspective: 1000px;
       transform-style: preserve-3d;
-      transition: transform 0.1s ease;
     }
 
     .card-inner {
@@ -33,11 +32,10 @@
       overflow: hidden;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.2s ease;
+      transition: transform 0.3s ease;
     }
 
-    .card-bg,
-    .card-foil {
+    .card-bg, .card-foil {
       position: absolute;
       top: 0;
       left: 0;
@@ -46,6 +44,7 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      pointer-events: none;
     }
 
     .card-bg {
@@ -55,12 +54,13 @@
     .card-foil {
       z-index: 2;
       mix-blend-mode: screen;
-      opacity: 0.75;
-      pointer-events: none;
+      opacity: 0.7;
       -webkit-mask-image: var(--mask-url);
       -webkit-mask-size: cover;
+      -webkit-mask-repeat: no-repeat;
       mask-image: var(--mask-url);
       mask-size: cover;
+      mask-repeat: no-repeat;
     }
 
     .card-glare {
@@ -68,10 +68,10 @@
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: none;
-      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.2), transparent 60%);
       width: 100%;
       height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.2), transparent 60%);
       mix-blend-mode: soft-light;
     }
   </style>
@@ -95,9 +95,11 @@
     const foilUrl = getParam('foil');
     const maskUrl = getParam('mask');
 
-    document.getElementById('bg').style.backgroundImage = `url(${bgUrl})`;
-    document.getElementById('foil').style.backgroundImage = `url(${foilUrl})`;
-    document.documentElement.style.setProperty('--mask-url', `url(${maskUrl})`);
+    if (bgUrl) document.getElementById('bg').style.backgroundImage = `url(${bgUrl})`;
+    if (foilUrl) document.getElementById('foil').style.backgroundImage = `url(${foilUrl})`;
+    if (maskUrl) {
+      document.documentElement.style.setProperty('--mask-url', `url(${maskUrl})`);
+    }
 
     const card = document.getElementById('cardInner');
     document.getElementById('card').addEventListener('mousemove', (e) => {
