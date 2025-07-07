@@ -51,17 +51,21 @@
       z-index: 1;
     }
 
-    .card-foil {
-      z-index: 2;
-      mix-blend-mode: screen;
-      opacity: 0.7;
-      -webkit-mask-image: var(--mask-url);
-      -webkit-mask-size: cover;
-      -webkit-mask-repeat: no-repeat;
-      mask-image: var(--mask-url);
-      mask-size: cover;
-      mask-repeat: no-repeat;
-    }
+.card-foil {
+  z-index: 2;
+  mix-blend-mode: screen;
+  opacity: 1; /* Full strength */
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-mask-image: var(--mask-url);
+  -webkit-mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: var(--mask-url);
+  mask-size: cover;
+  mask-repeat: no-repeat;
+  filter: brightness(1.2); /* Optional: boost brightness */
+}
 
     .card-glare {
       z-index: 3;
