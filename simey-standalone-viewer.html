@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simey Card Single Viewer</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .card-container {
+      perspective: 1000px;
+    }
+
+    .card {
+      width: 300px;
+      height: 420px;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background-image: var(--card-url);
+      background-size: cover;
+      background-position: center;
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+    }
+
+    .card::before,
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Light shimmer tracking mouse */
+    .card::before {
+      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.2), transparent 60%);
+      mix-blend-mode: soft-light;
+    }
+
+    /* Foil sparkle layer */
+    .card::after {
+      background-image: var(--foil-url);
+      background-size: cover;
+      background-repeat: no-repeat;
+      mix-blend-mode: color-dodge;
+      opacity: 1;
+      animation: flicker 2s infinite;
+      mask-image: var(--mask-url);
+      -webkit-mask-image: var(--mask-url);
+      mask-size: cover;
+      -webkit-mask-size: cover;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card-container">
+    <div class="card" id="card"></div>
+  </div>
+
+  <script>
+    const getParam = (key) => new URLSearchParams(window.location.search).get(key);
+
+    const cardEl = document.getElementById('card');
+    const card = getParam("card");
+    const foil = getParam("foil");
+    const mask = getParam("mask");
+
+    if (card) cardEl.style.setProperty("--card-url", `url(${card})`);
+    if (foil) cardEl.style.setProperty("--foil-url", `url(${foil})`);
+    if (mask) cardEl.style.setProperty("--mask-url", `url(${mask})`);
+
+    // Mouse move tracking
+    document.querySelector(".card-container").addEventListener("mousemove", (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      cardEl.style.setProperty("--x", `${x}%`);
+      cardEl.style.setProperty("--y", `${y}%`);
+
+      const rotateY = (x - 50) / 5;
+      const rotateX = (50 - y) / 5;
+      cardEl.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    document.querySelector(".card-container").addEventListener("mouseleave", () => {
+      cardEl.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    });
+  </script>
+</body>
+</html>
